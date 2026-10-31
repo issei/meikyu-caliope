@@ -1,0 +1,9 @@
+# Ruff (só desenvolvimento; 01-especificacao.md §16). Regras mínimas: erros reais,
+# importações e modernização. Ampliar quando o código da etapa E1 existir.
+line-length = 120
+target-version = "py312"
+# Scripts de sondagem anexados à especificação são evidência, não código do projeto.
+extend-exclude = ["docs/especificacao/anexos"]
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B"]
