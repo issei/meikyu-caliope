@@ -8,11 +8,19 @@ Primeiro estudo: acessibilidade em serviços de streaming de vídeo no Brasil (L
 
 ## Estado
 
-Só especificação. Nada foi implementado.
+Especificação e ambiente de desenvolvimento prontos. O produto ainda não foi implementado (próxima etapa: E1).
 
 - Especificação: [`docs/especificacao/`](docs/especificacao/README.md)
 - Decisões de arquitetura (aceitas em 30/10/2026): [`docs/especificacao/03-adrs.md`](docs/especificacao/03-adrs.md)
+- Protocolo para agentes: [`AGENTS.md`](AGENTS.md)
+- CI/CD: [`docs/ci-cd.md`](docs/ci-cd.md)
+
+## Verificar
+
+```bash
+python scripts/verificar.py
+```
 
 ## Dados
 
-Este repositório nunca recebe respostas reais. As únicas respostas aqui são fictícias, em `docs/especificacao/anexos/`, e servem para testar o formato.
+Este repositório nunca recebe respostas reais. As únicas respostas aqui são fictícias, em `docs/especificacao/anexos/` e, a partir da etapa E1, em `tests/fixtures/ficticio/`. A CI e o hook do agente bloqueiam base SQLite, exportação real e JSON de resposta sem marca de fixture.

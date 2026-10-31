@@ -1,0 +1,4 @@
+# Arquivos fictícios no formato da página, aceitos pelo check_dados (regra D3)
+# sem o campo "_fixture": true. Use só para arquivo que não pode mudar de bytes.
+# Formato: <sha256>  <caminho>. Toda linha nova passa por revisão do Issei.
+2afaf9804d87ef03aedfe9cc37a4bbe227958b5340e3e6076e6dfda9441e0b10  docs/especificacao/anexos/exemplo-ficticio-v1.json

@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Dados de pesquisa: nunca no repositório (ADR-ps-006, ADR-ps-007).
+# A pasta de dados fica fora do clone (padrão: %LOCALAPPDATA%\pesquisa-streaming\).
+# Estas linhas são a segunda linha de defesa; a primeira é scripts/ci/check_dados.py.
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.db-journal
+pesquisa-streaming/
+entrada/
+saida/
+logs/
+.env
+.env.*
+
+# Notebooks: checkpoints locais
+.ipynb_checkpoints/
+
+# Ferramentas locais de agente (decisão por máquina)
+.codegraph/
+.claude/settings.local.json
+
+# Editor / sistema
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
