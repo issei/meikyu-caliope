@@ -56,7 +56,7 @@ O texto em `content` repete a mensagem e a ação, em frases curtas.
 | `CFG-002` | Base não encontrada ou esquema mais novo que o pacote | Conferir o caminho; atualizar o pacote |
 | `ARQ-001` | Nome de arquivo com separador, `..`, unidade ou caminho absoluto | Usar só o nome de um arquivo em `entrada/` |
 | `ARQ-002` | Arquivo não existe em `entrada/` | Copiar o arquivo para `entrada/` |
-| `VAL-001` … `VAL-010` | Regras da especificação §12.1 | Ver a mensagem |
+| `VAL-001` … `VAL-011` | Regras da especificação §12.1 | Ver a mensagem |
 | `PAR-001` | Participante informado não existe | Listar com `participantes_listar` |
 | `PAR-002` | Participante retirado ou expurgado | Não importar; falar com quem coordena |
 | `TRC-001` | Resposta não existe ou está vazia | — |
@@ -127,7 +127,7 @@ Regras: valida antes; uma transação; evento `importacao`; com erro, nada é gr
 ### 5.6 `respostas_consultar` (leitura)
 
 Entrada: `participante`, `submissao`, `pergunta` (chave), `parte`, `dimensao` (valor), `incluir_grupos` (lógico, padrão verdadeiro), `so_vigentes` (padrão verdadeiro), `limite`, `cursor`.
-Saída: `itens [{resposta_id, participante_id, submissao_id, pergunta, rotulo_pergunta, dimensao, item_grupo_id, campo_grupo, preenchida, tamanho, sha256}]`. **Sem texto de resposta.**
+Saída: `itens [{resposta_id, participante_id, submissao_id, pergunta, rotulo_pergunta, dimensao, item_grupo_id, campo_grupo, preenchida, estado, tamanho, sha256}]`. `estado` é `preenchida`, `vazia` ou `nao_se_aplica` (especificação RF-27). **Sem texto de resposta.**
 Regras: pelo menos um filtro; ordem por (`participante_id`, ordem da pergunta, `item_grupo_id`).
 
 ### 5.6a `respostas_buscar` (leitura)

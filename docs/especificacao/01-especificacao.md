@@ -270,7 +270,7 @@ Atributos específicos (resumo; o esquema SQL fica para a fase de implementaçã
 - `Participante`: `id` (`P-001`), `autorizacao_uso` (derivada da submissão vigente), `retirado_em`.
 - `Identificacao`: `participante_id`, `nome`, `contato`, `forma_identificacao`. Fora do MCP.
 - `Submissao`: `id`, `participante_id`, `arquivo_id`, `instrumento_id`, `versao` (1, 2, …), `vigente` (lógico), `atualizado_em_declarado`.
-- `Resposta`: `id`, `submissao_id`, `pergunta_chave`, `situacao_id` (nulo para campo fixo), `texto_normalizado`, `sha256`, `vazia` (lógico).
+- `Resposta`: `id`, `submissao_id`, `pergunta_chave`, `situacao_id` (nulo para campo fixo), `texto_normalizado`, `sha256`, `estado` (`preenchida`, `vazia` ou `nao_se_aplica`; RF-27).
 - `Situacao`: `id`, `submissao_id`, `id_original`, `parte`, ordem.
 - `Trecho`: `id`, `resposta_id`, `inicio`, `fim` (posições em caracteres do texto normalizado), `texto_citado`, `resposta_sha256`, `citavel` (derivado da autorização).
 - `Codigo`: `id`, `rotulo`, `definicao`, `criterio_inclusao`, `criterio_exclusao`, `pai_id`, `versao`.
@@ -291,8 +291,8 @@ O núcleo não conhece o formulário de streaming. Ele trabalha com termos gené
 | Item de grupo | Uma situação preenchida (entidade `Situacao` deste documento) | Dados importados |
 | Regra de autorização | `aut-uso` com "Sim" ou "Sim, com as restrições…" | `instrumento.json` |
 | Campos sensíveis | `antes-nome`, `aut-nome`, `aut-contato` | `instrumento.json` |
-| Leitor de formato | JSON da página, formato versão 1 (`campos`, `situacoes`) | `leitores/pagina_v1.py` |
-| Normalização | Aparelho, serviço, recurso e controle | `normalizacao.json` |
+| Leitor de formato | JSON da página, formato versão 1 (`campos`, `situacoes`); texto (`.txt`) da página com `Código:` (RF-26); texto antigo, sem `Código:`, casado pelo texto da pergunta (RF-26) | `leitores/pagina_v1.py`, `leitores/texto_v2.py`, `leitores/texto_v1.py` |
+| Normalização | Aparelho, serviço, recurso e controle; valores que declaram "não se aplica" (RF-27) | `normalizacao.json` |
 | Conjunto de análises | AN-01 a AN-05 com parâmetros deste estudo | `analises.json` |
 
 Regras:
@@ -501,6 +501,8 @@ Prioridade: **MVP** (necessário para a demonstração da §13 do pedido), **I2*
 | RF-22 | O sistema deve calcular o impacto de uma mudança: objetos e execuções afetados. | Questão 5; princípio "identificar resultados afetados". | Alterar uma resposta marca trechos, codificações, achados e execuções dependentes como `desatualizado`. | I3 |
 | RF-24 | Nenhuma saída do MCP deve conter texto de resposta, de situação, de trecho ou de identificação (§8.3). | Decisão do Issei (30/10/2026). | Teste de vazamento: nenhuma sequência de 20 ou mais caracteres de qualquer resposta das fixtures aparece em saída do MCP. | MVP |
 | RF-25 | O sistema deve carregar um estudo a partir de um pacote de estudo (instrumento, normalização, leitor de formato, conjunto de análises), sem mudar o núcleo. | Reuso em outras pesquisas (§5.4). | Um pacote de teste com instrumento diferente (2 perguntas, 1 grupo com 2 campos, 1 dimensão) importa, consulta e executa AN-01 sem mudança no núcleo. | MVP |
+| RF-26 | O sistema deve importar o `.txt` que a página exporta. No formato com `Código:` (site, 04/11/2026), cada pergunta tem as linhas `Pergunta:`, `Código:` e `Resposta:`, nesta ordem; `Resposta: (sem resposta)` é pergunta em branco; a resposta vai até a próxima linha `Pergunta:`, título de parte ou nome de situação. No formato antigo, sem `Código:`, o leitor casa a pergunta pelo texto exato do instrumento e marca como `vazia` toda pergunta que não aparece. Os dois leitores produzem a mesma representação interna do JSON, e as validações 5 a 9 da §12.1 valem igual. | As pessoas mandam o `.txt`, não o `.json` (primeira entrevista real, 03/11/2026; decisão do Issei em 04/11/2026). | O mesmo conteúdo exportado em `.json` e em `.txt` (com `Código:`) produz respostas com o mesmo `sha256` e o mesmo `estado`. Um `.txt` antigo com texto de pergunta que não existe no instrumento é recusado com `VAL-011`, citando a linha. | MVP |
+| RF-27 | Na normalização, a resposta inteira igual (sem diferenciar maiúsculas, acentos e espaços) a um valor da lista "não se aplica" do pacote (neste estudo: `n/a`, `na`, `não se aplica`, `nao se aplica`, `-`) recebe `estado = nao_se_aplica`. "Não" continua `preenchida`, porque é resposta válida em pergunta de sim ou não. O texto original continua no `Arquivo`. | "N/a" contava como resposta preenchida e distorcia a cobertura (primeira entrevista real; decisão do Issei em 04/11/2026). | `N/a`, ` n/a ` e `Não se aplica` → `nao_se_aplica`; `Não` e `Não uso` → `preenchida`. AN-01 conta as três categorias em separado. | MVP |
 | RF-23 | A pessoa deve poder expurgar os dados de um participante pela CLI. | Retirada de autorização; LGPD. | Depois do expurgo, nenhum texto do participante existe na base nem na exportação; o evento registra o expurgo sem o conteúdo. | I2 |
 
 ### 11.2 Requisitos não funcionais
@@ -537,6 +539,7 @@ Prioridade: **MVP** (necessário para a demonstração da §13 do pedido), **I2*
 | 8 | Campo de opção tem um valor da lista do instrumento | `VAL-008` |
 | 9 | Situação: `parte` em `A`–`E`; só campos do instrumento; valores texto | `VAL-009` |
 | 10 | `atualizadoEm`, se existir, é data ISO-8601 | `VAL-010` |
+| 11 | `.txt`: toda pergunta casa com o instrumento (por `Código:` ou, no formato antigo, pelo texto exato) | `VAL-011` |
 
 Nota sobre a regra 6: a página **descarta** chaves desconhecidas ao importar. O backend **recusa**, porque descartar em silêncio perderia dado de pesquisa. **[Alternativa]** Aceitar e guardar como "campo não catalogado", com aviso. Decido por recusar no MVP porque o instrumento é fixo.
 
@@ -673,7 +676,7 @@ Exceção controlada à imutabilidade, só pela CLI, com confirmação digitada:
 
 | ID | Análise | Saída |
 | :-- | :-- | :-- |
-| AN-01 | Cobertura do instrumento: por pergunta, quantos participantes responderam, deixaram em branco ou não tiveram o campo | Tabela pergunta × contagem; `n` |
+| AN-01 | Cobertura do instrumento: por pergunta, quantos participantes responderam, declararam "não se aplica" (RF-27), deixaram em branco ou não tiveram o campo | Tabela pergunta × contagem; `n` |
 | AN-02 | Situações por parte (eixo) e por participante | Contagens |
 | AN-03 | Situações por aparelho, serviço, recurso e controle, com a tabela de normalização versionada (E-07) | Contagens; quantidade de valores sem mapeamento (a lista dos valores só na CLI) |
 | AN-04 | Autorização: participantes por resposta de `aut-uso`, incluindo "ausente" | Contagens |

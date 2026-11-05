@@ -74,6 +74,8 @@ Para responder, basta uma mensagem curta, por exemplo: "D-03 ok, D-04 ok, D-07 n
 
 **Recomendação:** definir antes da primeira importação real. Não proponho prazo: é decisão da pesquisa e, em parte, jurídica (V-06).
 
+**Situação (04/11/2026).** O Issei decidiu perguntar à Liga. O rascunho da mensagem, com as três perguntas acima e a da V-06, está na pasta do projeto (`backend-pesquisa-streaming/mensagem-liga-d05-v06.md`). Continua bloqueando a importação real.
+
 ---
 
 ## V-06 — Enquadramento na LGPD
@@ -81,6 +83,8 @@ Para responder, basta uma mensagem curta, por exemplo: "D-03 ok, D-04 ok, D-07 n
 **O que é.** Informação sobre deficiência provavelmente é dado pessoal sensível (LGPD, art. 5º, II, "dado referente à saúde"). Isso muda a base legal e os cuidados exigidos.
 
 **Recomendação:** pedir a quem responde juridicamente pela Liga uma confirmação curta, antes da primeira resposta real. Eu não sou fonte jurídica; a especificação só prevê os controles técnicos (separação da identificação, expurgo, barreira de conteúdo).
+
+**Situação (04/11/2026).** Pergunta incluída na mensagem à Liga (ver D-05).
 
 ---
 
